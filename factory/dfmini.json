@@ -1,0 +1,9 @@
+{
+	"name": "dfmini",
+	"location": "eastus2",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "972ba521-258a-4adb-b7b4-89a07d6803eb",
+		"tenantId": "2800c0a0-70e9-49be-8733-faeaa6aced99"
+	}
+}

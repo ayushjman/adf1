@@ -1,0 +1,82 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable2",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable3",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          category as string,",
+				"          subCategory as string,",
+				"          seriesCategoryCode as string,",
+				"          seriesCategoryName as string,",
+				"          seriesCode as string,",
+				"          seriesName as string,",
+				"          brandCode as string,",
+				"          brandName as string,",
+				"          imageUrl as string,",
+				"          minStandardUnitPrice as string,",
+				"          maxStandardUnitPrice as string,",
+				"          minPricePerPiece as string,",
+				"          maxPricePerPiece as string,",
+				"          minStandardDaysToShip as string,",
+				"          maxStandardDaysToShip as string,",
+				"          stockItemFlag as string,",
+				"          discontinuedProductFlag as string,",
+				"          specialShipmentFlag as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source1 select(mapColumn(",
+				"          category,",
+				"          subCategory,",
+				"          seriesCategoryCode,",
+				"          seriesCategoryName,",
+				"          seriesCode,",
+				"          seriesName,",
+				"          brandCode,",
+				"          brandName,",
+				"          stockItemFlag,",
+				"          discontinuedProductFlag,",
+				"          specialShipmentFlag",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+			]
+		}
+	}
+}

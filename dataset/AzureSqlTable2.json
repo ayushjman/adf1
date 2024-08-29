@@ -1,0 +1,17 @@
+{
+	"name": "AzureSqlTable2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LSSql01",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "raw",
+			"table": "groupeddata"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
