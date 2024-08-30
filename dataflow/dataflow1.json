@@ -10,6 +10,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable3",
+						"type": "DatasetReference"
+					},
+					"name": "productpricing"
 				}
 			],
 			"sinks": [
@@ -47,6 +54,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "sink5"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable8",
+						"type": "DatasetReference"
+					},
+					"name": "sink6"
 				}
 			],
 			"transformations": [
@@ -68,6 +82,12 @@
 				},
 				{
 					"name": "handleNull"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -95,6 +115,23 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> source1",
+				"source(output(",
+				"          category as string,",
+				"          subCategory as string,",
+				"          seriesCategoryCode as string,",
+				"          seriesCategoryName as string,",
+				"          seriesCode as string,",
+				"          seriesName as string,",
+				"          brandCode as string,",
+				"          brandName as string,",
+				"          stockItemFlag as string,",
+				"          discontinuedProductFlag as string,",
+				"          specialShipmentFlag as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> productpricing",
 				"source1 select(mapColumn(",
 				"          category,",
 				"          subCategory,",
@@ -146,6 +183,14 @@
 				"          maxStandardUnitPrice = iif(isNull(maxStandardUnitPrice),\"NULL\",maxStandardUnitPrice),",
 				"          minPricePerPiece = iif(isNull(minPricePerPiece),\"NULL\",minPricePerPiece),",
 				"          maxPricePerPiece = iif(isNull(maxPricePerPiece),\"NULL\",maxPricePerPiece)) ~> handleNull",
+				"productpricing, handleNull join(productpricing@seriesCode == pricing@seriesCode",
+				"     && productpricing@seriesCategoryCode == pricing@seriesCategoryCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"brands aggregate(groupBy(brandCode),",
+				"     brandName = min(brandName)) ~> aggregate1",
 				"products sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
@@ -176,7 +221,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError') ~> sink3",
-				"brands sink(allowSchemaDrift: true,",
+				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
@@ -195,7 +240,17 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> sink5"
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink5",
+				"join1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink6"
 			]
 		}
 	}
