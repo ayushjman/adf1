@@ -51,20 +51,23 @@
 			],
 			"transformations": [
 				{
-					"name": "select1"
+					"name": "products"
 				},
 				{
-					"name": "select2"
+					"name": "pricing"
 				},
 				{
-					"name": "select3"
+					"name": "shipping"
 				},
 				{
-					"name": "select4",
+					"name": "brands",
 					"description": "create brands table"
 				},
 				{
-					"name": "select5"
+					"name": "categories"
+				},
+				{
+					"name": "handleNull"
 				}
 			],
 			"scriptLines": [
@@ -106,7 +109,7 @@
 				"          specialShipmentFlag",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
+				"     skipDuplicateMapOutputs: true) ~> products",
 				"source1 select(mapColumn(",
 				"          seriesCode,",
 				"          seriesCategoryCode,",
@@ -117,7 +120,7 @@
 				"          maxPricePerPiece",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select2",
+				"     skipDuplicateMapOutputs: true) ~> pricing",
 				"source1 select(mapColumn(",
 				"          seriesCode,",
 				"          brandCode,",
@@ -125,21 +128,25 @@
 				"          maxStandardDaysToShip",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select3",
+				"     skipDuplicateMapOutputs: true) ~> shipping",
 				"source1 select(mapColumn(",
 				"          brandCode,",
 				"          brandName",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select4",
+				"     skipDuplicateMapOutputs: true) ~> brands",
 				"source1 select(mapColumn(",
 				"          category,",
 				"          subCategory,",
 				"          seriesCode",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select5",
-				"select1 sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: true) ~> categories",
+				"pricing derive(minStandardUnitPrice = iif(isNull(minStandardUnitPrice),\"NULL\",minStandardUnitPrice),",
+				"          maxStandardUnitPrice = iif(isNull(maxStandardUnitPrice),\"NULL\",maxStandardUnitPrice),",
+				"          minPricePerPiece = iif(isNull(minPricePerPiece),\"NULL\",minPricePerPiece),",
+				"          maxPricePerPiece = iif(isNull(maxPricePerPiece),\"NULL\",maxPricePerPiece)) ~> handleNull",
+				"products sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
@@ -149,7 +156,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError') ~> sink1",
-				"select2 sink(allowSchemaDrift: true,",
+				"handleNull sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
@@ -159,7 +166,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError') ~> sink2",
-				"select3 sink(allowSchemaDrift: true,",
+				"shipping sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
@@ -169,7 +176,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError') ~> sink3",
-				"select4 sink(allowSchemaDrift: true,",
+				"brands sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
@@ -179,7 +186,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError') ~> sink4",
-				"select5 sink(allowSchemaDrift: true,",
+				"categories sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
