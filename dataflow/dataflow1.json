@@ -10,13 +10,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "source1"
-				},
-				{
-					"dataset": {
-						"referenceName": "AzureSqlTable3",
-						"type": "DatasetReference"
-					},
-					"name": "productpricing"
 				}
 			],
 			"sinks": [
@@ -26,13 +19,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
-				},
-				{
-					"dataset": {
-						"referenceName": "AzureSqlTable4",
-						"type": "DatasetReference"
-					},
-					"name": "sink2"
 				},
 				{
 					"dataset": {
@@ -68,9 +54,6 @@
 					"name": "products"
 				},
 				{
-					"name": "pricing"
-				},
-				{
 					"name": "shipping"
 				},
 				{
@@ -79,9 +62,6 @@
 				},
 				{
 					"name": "categories"
-				},
-				{
-					"name": "handleNull"
 				},
 				{
 					"name": "join1"
@@ -115,23 +95,6 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> source1",
-				"source(output(",
-				"          category as string,",
-				"          subCategory as string,",
-				"          seriesCategoryCode as string,",
-				"          seriesCategoryName as string,",
-				"          seriesCode as string,",
-				"          seriesName as string,",
-				"          brandCode as string,",
-				"          brandName as string,",
-				"          stockItemFlag as string,",
-				"          discontinuedProductFlag as string,",
-				"          specialShipmentFlag as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> productpricing",
 				"source1 select(mapColumn(",
 				"          category,",
 				"          subCategory,",
@@ -147,17 +110,6 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> products",
-				"source1 select(mapColumn(",
-				"          seriesCode,",
-				"          seriesCategoryCode,",
-				"          brandCode,",
-				"          minStandardUnitPrice,",
-				"          maxStandardUnitPrice,",
-				"          minPricePerPiece,",
-				"          maxPricePerPiece",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> pricing",
 				"source1 select(mapColumn(",
 				"          seriesCode,",
 				"          brandCode,",
@@ -179,11 +131,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> categories",
-				"pricing derive(minStandardUnitPrice = iif(isNull(minStandardUnitPrice),\"NULL\",minStandardUnitPrice),",
-				"          maxStandardUnitPrice = iif(isNull(maxStandardUnitPrice),\"NULL\",maxStandardUnitPrice),",
-				"          minPricePerPiece = iif(isNull(minPricePerPiece),\"NULL\",minPricePerPiece),",
-				"          maxPricePerPiece = iif(isNull(maxPricePerPiece),\"NULL\",maxPricePerPiece)) ~> handleNull",
-				"productpricing, handleNull join(productpricing@seriesCode == pricing@seriesCode",
+				"source1 join(productpricing@seriesCode == pricing@seriesCode",
 				"     && productpricing@seriesCategoryCode == pricing@seriesCategoryCode,",
 				"     joinType:'inner',",
 				"     matchType:'exact',",
@@ -201,16 +149,6 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError') ~> sink1",
-				"handleNull sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     deletable:false,",
-				"     insertable:true,",
-				"     updateable:false,",
-				"     upsertable:false,",
-				"     format: 'table',",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> sink2",
 				"shipping sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
