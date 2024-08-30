@@ -55,9 +55,6 @@
 				},
 				{
 					"name": "categories"
-				},
-				{
-					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -121,8 +118,6 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> categories",
-				"brands aggregate(groupBy(brandCode),",
-				"     brandName = min(brandName)) ~> aggregate1",
 				"products sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
@@ -143,7 +138,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError') ~> sink3",
-				"aggregate1 sink(allowSchemaDrift: true,",
+				"brands sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
