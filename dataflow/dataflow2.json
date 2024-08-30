@@ -9,7 +9,7 @@
 						"referenceName": "AzureSqlTable3",
 						"type": "DatasetReference"
 					},
-					"name": "source1",
+					"name": "sourceProduct",
 					"description": "Import data from products table"
 				},
 				{
@@ -17,21 +17,28 @@
 						"referenceName": "AzureSqlTable9",
 						"type": "DatasetReference"
 					},
-					"name": "source2"
+					"name": "sourcePricing"
 				},
 				{
 					"dataset": {
 						"referenceName": "AzureSqlTable3",
 						"type": "DatasetReference"
 					},
-					"name": "source3"
+					"name": "sourceProduct1"
 				},
 				{
 					"dataset": {
 						"referenceName": "AzureSqlTable5",
 						"type": "DatasetReference"
 					},
-					"name": "source4"
+					"name": "sourceShipment"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable9",
+						"type": "DatasetReference"
+					},
+					"name": "sourcePricing1"
 				}
 			],
 			"sinks": [
@@ -75,7 +82,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> source1",
+				"     format: 'table') ~> sourceProduct",
 				"source(output(",
 				"          seriesCode as string,",
 				"          seriesCategoryCode as string,",
@@ -88,7 +95,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> source2",
+				"     format: 'table') ~> sourcePricing",
 				"source(output(",
 				"          category as string,",
 				"          subCategory as string,",
@@ -105,7 +112,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> source3",
+				"     format: 'table') ~> sourceProduct1",
 				"source(output(",
 				"          seriesCode as string,",
 				"          brandCode as string,",
@@ -115,15 +122,19 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> source4",
-				"source1, source2 join(source1@seriesCode == source2@seriesCode",
-				"     && source1@seriesCategoryCode == source2@seriesCategoryCode,",
+				"     format: 'table') ~> sourceShipment",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourcePricing1",
+				"sourceProduct, sourcePricing join(sourceProduct@seriesCode == sourcePricing@seriesCode",
+				"     && sourceProduct@seriesCategoryCode == sourcePricing@seriesCategoryCode,",
 				"     joinType:'inner',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"source3, source4 join(source3@seriesCode == source4@seriesCode",
-				"     && source3@brandCode == source4@brandCode,",
+				"sourceProduct1, sourceShipment join(sourceProduct1@seriesCode == sourceShipment@seriesCode",
+				"     && sourceProduct1@brandCode == sourceShipment@brandCode,",
 				"     joinType:'inner',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
