@@ -40,13 +40,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "sink5"
-				},
-				{
-					"dataset": {
-						"referenceName": "AzureSqlTable8",
-						"type": "DatasetReference"
-					},
-					"name": "sink6"
 				}
 			],
 			"transformations": [
@@ -62,9 +55,6 @@
 				},
 				{
 					"name": "categories"
-				},
-				{
-					"name": "join1"
 				},
 				{
 					"name": "aggregate1"
@@ -131,12 +121,6 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> categories",
-				"source1 join(productpricing@seriesCode == pricing@seriesCode",
-				"     && productpricing@seriesCategoryCode == pricing@seriesCategoryCode,",
-				"     joinType:'inner',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join1",
 				"brands aggregate(groupBy(brandCode),",
 				"     brandName = min(brandName)) ~> aggregate1",
 				"products sink(allowSchemaDrift: true,",
@@ -178,17 +162,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> sink5",
-				"join1 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     deletable:false,",
-				"     insertable:true,",
-				"     updateable:false,",
-				"     upsertable:false,",
-				"     format: 'table',",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> sink6"
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink5"
 			]
 		}
 	}
